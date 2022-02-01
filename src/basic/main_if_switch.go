@@ -1,4 +1,4 @@
-package mamain_if_switch
+package main_if_switch
 
 import "fmt"
 
