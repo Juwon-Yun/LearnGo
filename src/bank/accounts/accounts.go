@@ -1,14 +1,17 @@
 package accounts
 
-import "erros"
+import (
+	"errors"
+	"fmt"
+)
+
+var errNoMoney = errors.New("can't withdraw")
 
 // Account private struct
 type Account struct {
 	owner   string
 	balance int
 }
-
-var errNoMoney = erros.New("Can't Withdraw")
 
 // Account의 메모리 주소를 새로운 account에 복사함
 // NewAccount creates Account
@@ -34,6 +37,7 @@ func (a Account) Balance() int {
 
 // Withdraw x of youer account
 func (a *Account) Whithdraw(amount int) error {
+
 	// -10이 되기때문에 error handling을 해야한다
 	if a.balance < amount {
 		// return erros.New("Can't withdraw")
@@ -42,4 +46,19 @@ func (a *Account) Whithdraw(amount int) error {
 	// nil => null or none
 	a.balance -= amount
 	return nil
+}
+
+// ChangeOwner of th account
+func (a *Account) ChangeOwner(newOwner string) {
+	a.owner = newOwner
+}
+
+// Owner of the account
+func (a Account) Owner() string {
+	return a.owner
+}
+
+func (a Account) String() string {
+	// return "whatever you want"
+	return fmt.Sprint(a.Owner(), "'s account.\nHas: ", a.Balance())
 }
