@@ -1,4 +1,4 @@
-package main_pointer
+package basic
 
 import "fmt"
 

@@ -1,4 +1,4 @@
-package main_if_switch
+package basic
 
 import "fmt"
 

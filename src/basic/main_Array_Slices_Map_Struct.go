@@ -1,4 +1,4 @@
-package main_Array_Slices_Map_Struct
+package basic
 
 import "fmt"
 

@@ -1,4 +1,4 @@
-package main_var_const_multiReturn_defer
+package basic
 
 import (
 	"fmt"

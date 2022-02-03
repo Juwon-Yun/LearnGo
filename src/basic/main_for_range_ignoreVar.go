@@ -1,4 +1,4 @@
-package main_for_range_ignoreVar
+package basic
 
 import "fmt"
 
