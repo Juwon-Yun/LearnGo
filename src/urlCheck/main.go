@@ -1,68 +1,85 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"time"
+	"net/http"
 )
 
-// main 함수는 결과를 저장하는 곳이다
+type requestResults struct {
+	url    string
+	status string
+}
 
-// channel은 goroutine과 main 함수 사이에 정보를 전달하기 위한 방법이다
-// goroutine과 goroutine 끼리 소통도 가능하다
+var errRequestFailed = errors.New("Request failed")
 
-// channel은 파이프같다
-// 메세지를 보내고 받고 하는 기능
-
+// functional programing
 func main() {
+	// map이 초기화가 안되서 에러
+	// var requestResultss map[string]string
 
-	// go routines 작동 => 병렬형 프로그래밍
-	// go sexyCount("juwon1")
-	// go sexyCount("juwon2")
+	// make() 함수로 초기화
+	var results = make(map[string]string)
+	c := make(chan requestResults)
 
-	// gorouine 함수밖에 존재하지않으면 main함수는 go만 실행하고 바로 종료된다
-	// 따라서 go만 실행하는 코드만 있다면 그냥 종료하는것처럼 보임
-
-	// 기다려주지않는다
-
-	// go sexyCount("juwon2")
-
-	// time.Sleep(time.Second * 5)
-
-	// 변수명 := make(chan returnType)
-	channel := make(chan bool)
-	people := [2]string{"juwon1", "juwon2"}
-	for _, person := range people {
-		go isSexy(person, channel)
-
-		// 변수에 담는건 불가능
-		// resule := go isSexy(person)
+	urls := []string{
+		"https://www.airbnb.com/",
+		"https://www.google.com/",
+		"https://www.amazon.com/",
+		"https://www.reddit.com/",
+		"https://www.google.com/",
+		"https://soundcloud.com/",
+		"https://www.facebook.com/",
+		"https://www.instagram.com/",
+		"https://academy.nomadcoders.co/",
 	}
-	// time.Sleep(time.Second * 10)
 
-	// goroutine의 메세지를 channel로 통해 받은것을 result 변수에 저장함
-	// 이 경우에는 goroutine 함수만 있어도 main이 종료되지 않는다
-	// result := <-channel
-	// fmt.Println(result)
+	// for _, url := range urls {
+	// 	requestResults := "OK"
+	// 	err := hitURL(url)
+	// 	if err != nil {
+	// 		requestResults = "Failed"
+	// 	}
+	// 	requestResultss[url] = requestResults
+	// }
+	// for url, requestResults := range requestResultss {
+	// 	fmt.Println(url, requestResults)
+	// }
 
-	// 바로 받는것과 두개 이상으로 받는것이 가능함
-	fmt.Println(<-channel)
-	fmt.Println(<-channel)
-
-	// 2개의 고루틴이 채널을 통해 메세지를 보내는것을 알고있으면 2개만 받는다
-	// 3개 이상의 고루틴이 채널을 통해 메세지를 보내면 예외처리하고 main을 종료함
-	// fatal error : all goroutines are asleep - deadlock!
-}
-func sexyCount(person string) {
-	for i := 0; i < 10; i++ {
-		fmt.Println(person, "is sexy", i)
-		time.Sleep(time.Second)
+	for _, url := range urls {
+		go hitURL(url, c)
 	}
+	for i := 0; i < len(urls); i++ {
+		// fmt.Println(<-c)
+		result := <-c
+		results[result.url] = result.status
+	}
+	for url, status := range results {
+		fmt.Println(url, status)
+	}
+
 }
 
-// func isSexy(person string ) bool {
-func isSexy(person string, c chan bool) {
-	time.Sleep(time.Second * 5)
-	// channel을 이용해서 메세지를 보낸다
-	c <- true
-	// return true
+// func hitURL(url string) error {
+// 	// 이런 방식은 동기적으로 한번 그다음 한번 실행한다.
+// 	fmt.Println("Checking: ", url)
+// 	resp, err := http.Get(url)
+// 	if err != nil || resp.StatusCode >= 400 {
+// 		fmt.Println(err)
+// 		return errRequestFailed
+
+// 	}
+// 	return nil
+// }
+
+func hitURL(url string, c chan<- requestResults) {
+	// fmt.Println("Checking: ", url)
+	// this channel is send only
+	// fmt.Println(<-c)
+	resp, err := http.Get(url)
+	status := "OK"
+	if err != nil || resp.StatusCode >= 400 {
+		status = "FAILED"
+	}
+	c <- requestResults{url: url, status: status}
 }
