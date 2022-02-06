@@ -31,7 +31,7 @@ func main() {
 		"https://soundcloud.com/",
 		"https://www.facebook.com/",
 		"https://www.instagram.com/",
-		"https://academy.nomadcoders.co/",
+		// "https://academy.nomadcoders.co/",
 	}
 
 	// for _, url := range urls {
